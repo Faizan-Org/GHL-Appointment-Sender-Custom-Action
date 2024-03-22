@@ -10,6 +10,14 @@ router.get("/locations/all", async (req, res) => {
             limit: '1000',
             companyId: process.env.COMPANY_ID
         }));
+
+        locations = {
+            "field": "location",
+            "title": "Select a location",
+            "fieldType": "select",
+            "required": true,
+            "options": locations.map(location => ({"label": location.name, "value": (location.id || location._id)}))
+        }
     } catch (err) {
         error = err;
         console.log(error);

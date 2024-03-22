@@ -114,7 +114,11 @@ const makeApiCall = (uri, method = "GET", body = null, params=null) => {
                     reject("Invalid");
                 }
             } else {
-                reject(error.response.data);
+                try {
+                    reject(error.response.data);
+                }catch (e) {
+                    reject(error);
+                }
             }
 
         }
