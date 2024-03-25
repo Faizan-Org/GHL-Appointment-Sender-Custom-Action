@@ -17,8 +17,7 @@ router.get("/users/search", async (req, res) => {
                 "required": true,
                 "options": users.map(user => ({"label": user.name, "value": (user.id || user._id)}))
             }
-        } catch
-            (err) {
+        } catch (err) {
             error = err;
             console.log(error);
         }

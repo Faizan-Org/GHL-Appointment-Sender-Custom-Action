@@ -12,7 +12,7 @@ router.get("/locations/all", async (req, res) => {
         }));
 
         locations = {
-            "field": "location",
+            "field": "locationId",
             "title": "Select a location",
             "fieldType": "select",
             "required": true,
