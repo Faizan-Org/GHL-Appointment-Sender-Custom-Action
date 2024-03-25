@@ -4,9 +4,9 @@ const {makeApiCall} = require("../global/globalFns");
 
 router.post("/calendars", async (req, res) => {
     let calendars = [];
-    console.log(req.body);
+    console.log(req.body, req.query);
     let error;
-    let locationId = req.body?.locationId || req.body?.data?.locationId;
+    let {app_location: locationId} = req.body;
     if (!locationId) {
         return res.status(401).send("Location id is missing.");
     }
