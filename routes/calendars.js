@@ -2,8 +2,20 @@ const express = require('express');
 const router = express.Router();
 const {makeApiCall} = require("../global/globalFns");
 
+const getField = (field, title, fieldType = "string", required = true) => ({
+    field,
+    title,
+    fieldType,
+    required
+})
+
 router.post("/calendars", async (req, res) => {
-    let calendars = [];
+    let fields = {
+        inputs: [{
+            "section": "Appointment Details",
+            fields: []
+        }]
+    };
     console.log(req.body, req.query);
     let error;
     let {app_location: locationId} = req.body;
@@ -11,29 +23,44 @@ router.post("/calendars", async (req, res) => {
         return res.status(401).send("Location id is missing.");
     }
     try {
-        ({calendars} = await makeApiCall("/calendars/", 'GET', null, {
+        let {calendars = []} = await makeApiCall("/calendars/", 'GET', null, {
             locationId: locationId
-        }, 'location'));
-        calendars = {
-            inputs: [{
-                "section": "Calendar",
-                fields: [{
-                    "field": "calendar",
-                    "title": "Select user calendar",
-                    "fieldType": "select",
-                    "required": true,
-                    "options": calendars.map(calendar => ({
-                        "label": calendar.name,
-                        "value": (calendar.id || calendar._id)
-                    }))
-                }]
+        }, 'location');
+
+        if (calendars.length < 1) {
+            calendars = [{
+                name: "No calendar found",
+                id: null
             }]
         }
+        let calendarField = {
+            "field": "calendar",
+            "title": "Select user calendar",
+            "fieldType": "select",
+            "required": true,
+            "options": calendars.map(calendar => ({
+                "label": calendar.name,
+                "value": (calendar.id || calendar._id)
+            }))
+        };
+        fields.inputs.fields.push(calendarField);
     } catch (err) {
         error = err;
         console.log(error);
     }
-    res.status(200).json(calendars);
+
+    let inputFields = [
+        {name: "Appointment Title", key: "appointmentTitle"},
+        {name: "Contact Id", key: "contactId"},
+        {name: "Appointment Start Time", key: "appointmentStartTime"},
+        {name: "Appointment End Time", key: "appointmentEndTime"},
+        {name: "Appointment Status", key: "appointmentStatus"},
+        {name: "Appointment Address", key: "appointmentAddress"},
+    ]
+
+    let inpFieldsJson = inputFields.map(({name, key}) => getField(key, name));
+    fields.inputs.fields = fields.inputs.fields.concat(inpFieldsJson);
+    res.status(200).json(fields);
 })
 
 module.exports = router;
