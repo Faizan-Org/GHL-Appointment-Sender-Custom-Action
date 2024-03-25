@@ -9,16 +9,6 @@ const getField = (field, title, fieldType = "string", required = true) => ({
     required
 })
 
-let res = {
-    app_location: 'S5YcXrbX6zbGQlNnsQ8b',
-    app_assign_user: 'bNDQAOlI0VRTlD5GNlOF',
-    calendar: 'XjRnVVVrrpeucMSabSsB',
-    type: 'app__send_appointment',
-    DYNAMIC: '',
-    app_to_notify: false,
-    app_ignore_date_range: false
-}
-
 router.post("/calendars", async (req, res) => {
     let fields = {
         inputs: [{
@@ -44,7 +34,7 @@ router.post("/calendars", async (req, res) => {
             }]
         }
         let calendarField = {
-            "field": "calendar",
+            "field": "calendarId",
             "title": "Select user calendar",
             "fieldType": "select",
             "required": true,
