@@ -14,13 +14,20 @@ router.post("/calendars", async (req, res) => {
         ({calendars} = await makeApiCall("/calendars/", 'GET', null, {
             locationId: locationId
         }, 'location'));
-
         calendars = {
-            "field": "calendar",
-            "title": "Select user calendar",
-            "fieldType": "select",
-            "required": true,
-            "options": calendars.map(calendar => ({"label": calendar.name, "value": (calendar.id || calendar._id)}))
+            inputs: [{
+                "section": "Calendar",
+                fields: [{
+                    "field": "calendar",
+                    "title": "Select user calendar",
+                    "fieldType": "select",
+                    "required": true,
+                    "options": calendars.map(calendar => ({
+                        "label": calendar.name,
+                        "value": (calendar.id || calendar._id)
+                    }))
+                }]
+            }]
         }
     } catch (err) {
         error = err;
