@@ -9,6 +9,16 @@ const getField = (field, title, fieldType = "string", required = true) => ({
     required
 })
 
+let res = {
+    app_location: 'S5YcXrbX6zbGQlNnsQ8b',
+    app_assign_user: 'bNDQAOlI0VRTlD5GNlOF',
+    calendar: 'XjRnVVVrrpeucMSabSsB',
+    type: 'app__send_appointment',
+    DYNAMIC: '',
+    app_to_notify: false,
+    app_ignore_date_range: false
+}
+
 router.post("/calendars", async (req, res) => {
     let fields = {
         inputs: [{
@@ -16,7 +26,7 @@ router.post("/calendars", async (req, res) => {
             fields: []
         }]
     };
-    console.log(req.body, req.query);
+    // console.log("body = ", req.body, "; query = ", req.query);
     let error;
     let {app_location: locationId} = req.body;
     if (!locationId) {
@@ -43,7 +53,7 @@ router.post("/calendars", async (req, res) => {
                 "value": (calendar.id || calendar._id)
             }))
         };
-        fields.inputs.fields.push(calendarField);
+        fields.inputs[0].fields.push(calendarField);
     } catch (err) {
         error = err;
         console.log(error);
@@ -59,7 +69,7 @@ router.post("/calendars", async (req, res) => {
     ]
 
     let inpFieldsJson = inputFields.map(({name, key}) => getField(key, name));
-    fields.inputs.fields = fields.inputs.fields.concat(inpFieldsJson);
+    fields.inputs[0].fields = fields.inputs[0].fields.concat(inpFieldsJson);
     res.status(200).json(fields);
 })
 
