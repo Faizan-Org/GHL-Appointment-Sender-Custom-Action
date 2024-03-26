@@ -49,7 +49,7 @@ router.post("/appointment/send", async (req, res) => {
         let dataBody = getCalendarPostData(data);
         let {locationId, contactId: contact_id = contactId} = extras;
         try {
-            const upsert = upsertContact(contact_id, locationId, copyToLocation_id);
+            const upsert = upsertContact(contact_id, locationId, app_locationId);
             dataBody.contactId = upsert.contactId;
             const data = await makeApiCall("calendars/events/appointments", "POST", dataBody, null, "location", app_locationId);
             console.log("Appointment created successfully", data);
