@@ -115,10 +115,10 @@ const getToken = (type = "access_token") => {
 }
 
 function checkTokenExp(data) {
-    let text = data.message;
     if (data && data?.statusCode) {
-        if (data.statusCode === 401 && data?.message) {
-            return text.includes('access') && (text.includes('expired') || text.includes('invalid'));
+        let text = data.message;
+        if (data.statusCode === 401 && data.message) {
+            return (text.includes('access') && (text.includes('expired') || text.includes('invalid')) || text.includes("Invalid JWT"));
         }
     }
     return false;
@@ -154,7 +154,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
             const {data} = await axios.request(options);
             resolve(data);
         } catch (error) {
-            console.log("makeApiCall", error);
+            // console.log("makeApiCall", error);
 
             if (checkTokenExp(error)) {
                 const refresh = await getToken("refresh_token");

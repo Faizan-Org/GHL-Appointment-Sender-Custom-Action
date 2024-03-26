@@ -19,6 +19,7 @@ router.get("/users/search", async (req, res) => {
             }
         } catch (err) {
             error = err;
+            locations = err;
             console.log(error);
         }
         res.status(200).json(users);

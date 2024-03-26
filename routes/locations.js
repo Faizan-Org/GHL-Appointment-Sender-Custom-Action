@@ -20,6 +20,7 @@ router.get("/locations/all", async (req, res) => {
         }
     } catch (err) {
         error = err;
+        locations = err;
         console.log(error);
     }
     res.status(200).json(locations);
