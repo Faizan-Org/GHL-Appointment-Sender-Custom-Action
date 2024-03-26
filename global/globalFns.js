@@ -45,11 +45,12 @@ const oauthToken = (code, type = "authorization_code") => {
 }
 
 function getLocationAccessToken(locationId) {
-    const encodedParams = new URLSearchParams();
-    encodedParams.set('companyId', process.env.COMPANY_ID);
-    encodedParams.set('locationId', 'S5YcXrbX6zbGQlNnsQ8b');
-
     return new Promise(async (resolve, reject) => {
+
+        if (!locationId) {
+            reject("Fun: getLocationAccessToken, Reject Reason: Location id is missing")
+        }
+
         let cacheKey = process.env.CACHE_KEY + locationId;
         let cacheData;
 
@@ -65,7 +66,6 @@ function getLocationAccessToken(locationId) {
         encodedParams.set('companyId', process.env.COMPANY_ID);
         encodedParams.set('locationId', locationId);
 
-        console.log(encodedParams)
         const options = {
             method: 'POST',
             url: mainauthurl + 'oauth/locationToken',
@@ -128,6 +128,9 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
     return new Promise(async (resolve, reject) => {
         try {
             locationId = locationId || params?.locationId;
+            if (tokenType === 'location' && typeof locationId !== "string") {
+                reject("fun -> makeApiCall, reason -> locationId is missing or invalid data type");
+            }
             const token = tokenType === 'location' ? await getLocationAccessToken(locationId) : await getToken();
             let url = new URL(uri, mainauthurl);
             if (!token || token.error) {
@@ -140,7 +143,8 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
                 headers: {
                     Authorization: 'Bearer ' + token,
                     Version: process.env.API_VERSION,
-                    Accept: 'application/json'
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
                 },
                 params
             };
@@ -149,7 +153,6 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
                 body = typeof body !== "string" ? JSON.stringify(body) : body;
                 options.data = body;
             }
-
 
             const {data} = await axios.request(options);
             resolve(data);
@@ -173,7 +176,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
                 }
             } else {
                 try {
-                    reject(error.response.data);
+                    reject({...error.response.data, locationId, accessToken: await getLocationAccessToken(locationId), tokenType, uri});
                 } catch (e) {
                     reject(error);
                 }
