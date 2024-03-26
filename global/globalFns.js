@@ -127,7 +127,7 @@ function checkTokenExp(data) {
 function makeApiCall(uri, method = "GET", body = null, params = null, tokenType, locationId) {
     return new Promise(async (resolve, reject) => {
         try {
-            locationId = locationId || params.locationId;
+            locationId = locationId || params?.locationId;
             const token = tokenType === 'location' ? await getLocationAccessToken(locationId) : await getToken();
             let url = new URL(uri, mainauthurl);
             if (!token || token.error) {
