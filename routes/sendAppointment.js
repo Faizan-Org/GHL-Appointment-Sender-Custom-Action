@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {makeApiCall} = require("../global/globalFns");
-
+const axios = require("axios").default;
+const LOGS_URL = "https://script.google.com/macros/s/AKfycbwvjHmw5YmK3D657zfu-9kFLiTlMLB_BdcYG8qrW4n-zn_VW-mu5umsWvyqSCvE0HScUA/exec";
 const getCalendarPostData = (obj = {}) => ({
     "calendarId": obj.calendarId,
     "locationId": obj.app_locationId,
@@ -72,17 +73,18 @@ const upsertContact = (contactId, locationId, upsertLocationId) => {
 
 router.post("/appointment/send", async (req, res) => {
     let error;
+    let appointment;
     try {
         let {body: {data = {}, extras = {}}} = req || {};
         let {app_locationId: upsertLocationId, contactId} = data;
         let dataBody = getCalendarPostData(data);
         let {locationId, contactId: contact_id = contactId} = extras;
-
         try {
             const upsert = await upsertContact(contact_id, locationId, upsertLocationId);
             dataBody.contactId = upsert.contactId;
-            const data = await makeApiCall("calendars/events/appointments", "POST", dataBody, null, "location", upsertLocationId);
-            console.log("Appointment created successfully", data);
+            appointment = await makeApiCall("calendars/events/appointments", "POST", dataBody, null, "location", upsertLocationId);
+            console.log("Appointment created successfully", appointment);
+
         } catch (err) {
             error = err;
         }
@@ -90,8 +92,15 @@ router.post("/appointment/send", async (req, res) => {
     } catch (err) {
         error = err;
     }
-
-    console.log("error", error);
+    try {
+        await axios.request({
+            method: "POST",
+            url: LOGS_URL,
+            data: {appointment, error, body: req.body}
+        })
+    } catch (e) {
+    }
+    console.log("send appointment", error);
     res.status(200).json({msg: "Appointment send successfully", error});
 })
 
