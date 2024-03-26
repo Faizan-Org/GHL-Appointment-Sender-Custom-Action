@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const {makeApiCall} = require("../global/globalFns");
-const axios = require('axios').default;
 
 const getCalendarPostData = (obj = {}) => ({
     "calendarId": obj.calendarId,
@@ -61,11 +60,12 @@ router.post("/appointment/send", async (req, res) => {
                 error = err;
             }
         }
-        console.log("body", body);
+        console.log("send appointment", req.body);
     } catch (err) {
         error = err;
     }
 
+    console.log("error", error);
     res.status(200).json({msg: "Appointment send successfully", error});
 })
 
