@@ -97,16 +97,21 @@ function getLocationAccessToken(locationId) {
     })
 }
 
-const getToken = (type = "access_token") => {
+const getToken = (type = "access_token", tokenType, locationId) => {
     return new Promise(async (resolve) => {
-        let cacheData = await client.get(process.env.CACHE_KEY);
-        let token = "";
-        if (cacheData) {
-            cacheData = JSON.parse(cacheData);
-            if (type === "access_token") {
-                token = cacheData.access_token;
-            } else {
-                token = cacheData.refresh_token;
+        let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQ2xhc3MiOiJDb21wYW55IiwiYXV0aENsYXNzSWQiOiI2NFlseDVQa2FRNUFoTldkdUtpeSIsInNvdXJjZSI6IklOVEVHUkFUSU9OIiwic291cmNlSWQiOiI2NWZjMDFhNDMzMDAwZmU1NWEzZTU4M2EtbHUxMmJqM20iLCJjaGFubmVsIjoiT0FVVEgiLCJwcmltYXJ5QXV0aENsYXNzSWQiOiI2NFlseDVQa2FRNUFoTldkdUtpeSIsIm9hdXRoTWV0YSI6eyJzY29wZXMiOlsiY2FsZW5kYXJzLndyaXRlIiwiY2FsZW5kYXJzL2V2ZW50cy53cml0ZSIsImNhbGVuZGFycy9ncm91cHMud3JpdGUiLCJjYWxlbmRhcnMvcmVzb3VyY2VzLndyaXRlIiwibG9jYXRpb25zLndyaXRlIiwiY29udGFjdHMud3JpdGUiLCJ1c2Vycy5yZWFkb25seSIsInNhYXMvbG9jYXRpb24ud3JpdGUiLCJzdXJ2ZXlzLnJlYWRvbmx5Iiwid29ya2Zsb3dzLnJlYWRvbmx5IiwidXNlcnMud3JpdGUiLCJzYWFzL2xvY2F0aW9uLnJlYWQiLCJzYWFzL2NvbXBhbnkud3JpdGUiLCJzYWFzL2NvbXBhbnkucmVhZCIsInByb2R1Y3RzL3ByaWNlcy53cml0ZSIsInByb2R1Y3RzL3ByaWNlcy5yZWFkb25seSIsInByb2R1Y3RzLndyaXRlIiwicHJvZHVjdHMucmVhZG9ubHkiLCJwYXltZW50cy90cmFuc2FjdGlvbnMucmVhZG9ubHkiLCJwYXltZW50cy9zdWJzY3JpcHRpb25zLnJlYWRvbmx5IiwicGF5bWVudHMvb3JkZXJzLnJlYWRvbmx5Iiwib3Bwb3J0dW5pdGllcy5yZWFkb25seSIsIm9wcG9ydHVuaXRpZXMud3JpdGUiLCJmdW5uZWxzL3JlZGlyZWN0LndyaXRlIiwiZnVubmVscy9yZWRpcmVjdC5yZWFkb25seSIsIm1lZGlhcy53cml0ZSIsIm1lZGlhcy5yZWFkb25seSIsImxvY2F0aW9ucy90ZW1wbGF0ZXMucmVhZG9ubHkiLCJsb2NhdGlvbnMvdGFncy53cml0ZSIsImxvY2F0aW9ucy90YWdzLnJlYWRvbmx5IiwibG9jYXRpb25zL3Rhc2tzLndyaXRlIiwiYnVzaW5lc3Nlcy5yZWFkb25seSIsImJ1c2luZXNzZXMud3JpdGUiLCJjb21wYW5pZXMucmVhZG9ubHkiLCJjYWxlbmRhcnMucmVhZG9ubHkiLCJjYWxlbmRhcnMvZ3JvdXBzLnJlYWRvbmx5IiwiY2FsZW5kYXJzL2V2ZW50cy5yZWFkb25seSIsImNhbGVuZGFycy9yZXNvdXJjZXMucmVhZG9ubHkiLCJjYW1wYWlnbnMucmVhZG9ubHkiLCJjb252ZXJzYXRpb25zLnJlYWRvbmx5IiwiY29udmVyc2F0aW9ucy53cml0ZSIsImNvbnZlcnNhdGlvbnMvbWVzc2FnZS5yZWFkb25seSIsImNvbnZlcnNhdGlvbnMvbWVzc2FnZS53cml0ZSIsImNvbnRhY3RzLnJlYWRvbmx5IiwiZm9ybXMucmVhZG9ubHkiLCJmb3Jtcy53cml0ZSIsImludm9pY2VzLnJlYWRvbmx5IiwiaW52b2ljZXMud3JpdGUiLCJpbnZvaWNlcy9zY2hlZHVsZS5yZWFkb25seSIsImludm9pY2VzL3NjaGVkdWxlLndyaXRlIiwiaW52b2ljZXMvdGVtcGxhdGUucmVhZG9ubHkiLCJpbnZvaWNlcy90ZW1wbGF0ZS53cml0ZSIsImxpbmtzLnJlYWRvbmx5IiwibGlua3Mud3JpdGUiLCJsb2NhdGlvbnMucmVhZG9ubHkiLCJsb2NhdGlvbnMvY3VzdG9tVmFsdWVzLnJlYWRvbmx5IiwibG9jYXRpb25zL2N1c3RvbVZhbHVlcy53cml0ZSIsImxvY2F0aW9ucy9jdXN0b21GaWVsZHMucmVhZG9ubHkiLCJsb2NhdGlvbnMvY3VzdG9tRmllbGRzLndyaXRlIiwibG9jYXRpb25zL3Rhc2tzLnJlYWRvbmx5Iiwib2F1dGgud3JpdGUiLCJvYXV0aC5yZWFkb25seSJdLCJjbGllbnQiOiI2NWZjMDFhNDMzMDAwZmU1NWEzZTU4M2EiLCJjbGllbnRLZXkiOiI2NWZjMDFhNDMzMDAwZmU1NWEzZTU4M2EtbHUxMmJqM20iLCJhZ2VuY3lQbGFuIjoiYWdlbmN5X21vbnRobHlfNDk3In0sImlhdCI6MTcxMTQ4MTg0Ny4xODgsImV4cCI6MTcxMTU2ODI0Ny4xODh9.lfyzynlke33vdO14yiJfoeIl2q8puR2tctVerBQGg6U";
+
+        if (tokenType === 'location') {
+            token = await getLocationAccessToken(locationId);
+        } else {
+            let cacheData = await client.get(process.env.CACHE_KEY);
+            if (cacheData) {
+                cacheData = JSON.parse(cacheData);
+                if (type === "access_token") {
+                    // token = cacheData.access_token;
+                } else {
+                    token = cacheData.refresh_token;
+                }
             }
         }
 
@@ -131,7 +136,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
             if (tokenType === 'location' && typeof locationId !== "string") {
                 reject("fun -> makeApiCall, reason -> locationId is missing or invalid data type");
             }
-            const token = tokenType === 'location' ? await getLocationAccessToken(locationId) : await getToken();
+            const token = await getToken(undefined, tokenType, locationId);
             let url = new URL(uri, mainauthurl);
             if (!token || token.error) {
                 return reject({error: "Token not found. Please reconnect your app with account.", msg: token?.error})
@@ -176,7 +181,13 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
                 }
             } else {
                 try {
-                    reject({...error.response.data, locationId, accessToken: await getLocationAccessToken(locationId), tokenType, uri});
+                    reject({
+                        ...error.response.data,
+                        locationId,
+                        accessToken: await getLocationAccessToken(locationId),
+                        tokenType,
+                        uri
+                    });
                 } catch (e) {
                     reject(error);
                 }
@@ -186,4 +197,98 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
     })
 }
 
-module.exports = {oauthToken, getToken, makeApiCall};
+function searchCustomField(locationId, query = "pdf url") {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const options = {
+                method: 'GET',
+                url: mainauthurl + "locations/" + locationId + "/customFields/search",
+                params: {
+                    parentId: '',
+                    skip: 0,
+                    limit: 10,
+                    documentType: "field",
+                    model: "all",
+                    query,
+                    includeStandards: true,
+                    headers: {
+                        Authorization: 'Bearer ' + await getToken(undefined, "location", locationId),
+                        Version: process.env.API_VERSION,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json'
+                    }
+                }
+            }
+
+            const {data} = await axios.request(options);
+            resolve(data.customFields[0]);
+
+        } catch (error) {
+            try {
+                reject(error.response.data)
+            } catch (e) {
+                reject(error);
+            }
+        }
+    })
+}
+
+function uploadFileToCustomField({contactId, locationId, file, customFieldId}) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const form = new FormData();
+            form.set(customFieldId, file);
+            const options = {
+                method: 'POST',
+                url: mainauthurl + 'forms/upload-custom-files',
+                params: {contactId, locationId},
+                headers: {
+                    Authorization: 'Bearer ' + await getToken(undefined, "location", locationId),
+                    Version: process.env.API_VERSION,
+                    'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
+                    Accept: 'application/json'
+                },
+                data: form
+            };
+
+            const {data} = await axios.request(options);
+            return resolve(data);
+        } catch (error) {
+            try {
+                reject(error.response.data);
+            } catch (e) {
+                reject(error);
+            }
+        }
+    })
+}
+
+function addTag(contactId, locationId, tags) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await makeApiCall("contacts/" + contactId + "/tags", "POST", {tags}, null, "location", locationId);
+            return resolve(data);
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+function addLogs(data) {
+    const LOGS_URL = "https://script.google.com/macros/s/AKfycbwvjHmw5YmK3D657zfu-9kFLiTlMLB_BdcYG8qrW4n-zn_VW-mu5umsWvyqSCvE0HScUA/exec";
+    return new Promise(async (resolve) => {
+        let msg = "logs added";
+        try {
+            await axios.request({
+                method: "POST",
+                url: LOGS_URL,
+                data: data
+            })
+        } catch (e) {
+            msg = e.message;
+        }
+        resolve(msg);
+    })
+}
+
+module.exports = {oauthToken, getToken, makeApiCall, uploadFileToCustomField, searchCustomField, addLogs, addTag};
