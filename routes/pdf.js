@@ -6,7 +6,7 @@ router.post("/contact/pdf", async (req, res) => {
     const body = req.body;
 
     if (typeof body.contactId !== "string" || typeof body.locationId !== "string") {
-        return reject("fun: Contact PDF, Invalid parameters, or data type.");
+        return res.status(400).send("fun: Contact PDF, Invalid parameters, or data type.");
     }
 
     try {
