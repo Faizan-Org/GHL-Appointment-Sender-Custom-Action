@@ -12,6 +12,6 @@ router.use(sendAppointmentRoute);
 router.use(getAllLocationRoute);
 router.use(getAllUserRoute);
 router.use(getCalendarRoute);
-router.use(contactPDFRoute);
+// router.use(contactPDFRoute);
 
 module.exports = router;
