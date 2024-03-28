@@ -7,7 +7,7 @@ const getCalendarPostData = (obj = {}) => ({
     "startTime": obj.appointmentStartTime,
     "endTime": obj.appointmentEndTime,
     "title": obj.appointmentTitle,
-    "appointmentStatus": obj.appointmentStatus,
+    "appointmentStatus": obj.appointmentStatus?.toLowerCase(),
     "assignedUserId": obj.app_assign_user,
     "address": obj.appointmentAddress,
     "ignoreDateRange": obj.app_ignore_date_range,
