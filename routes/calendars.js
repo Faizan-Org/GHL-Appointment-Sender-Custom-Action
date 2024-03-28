@@ -54,7 +54,7 @@ router.post("/calendars", async (req, res) => {
         {name: "Contact Id", key: "contactId"},
         {name: "Appointment Start Time", key: "appointmentStartTime"},
         {name: "Appointment End Time", key: "appointmentEndTime"},
-        {name: "Appointment Status", key: "appointmentStatus"},
+        {name: "Appointment Status (new, confirmed, cancelled, showed, noshow, invalid)", key: "appointmentStatus"},
         {name: "Appointment Address", key: "appointmentAddress"},
     ]
 
