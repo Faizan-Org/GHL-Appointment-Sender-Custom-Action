@@ -18,7 +18,7 @@ router.post("/calendars", async (req, res) => {
     };
     // console.log("body = ", req.body, "; query = ", req.query);
     let error;
-    let {app_location: locationId} = req.body;
+    let {app_locationId: locationId} = req.body;
     if (!locationId) {
         return res.status(401).send("Location id is missing.");
     }

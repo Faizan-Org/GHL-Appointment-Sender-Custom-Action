@@ -72,11 +72,15 @@ const upsertContact = (contactId, locationId, upsertLocationId) => {
 router.post("/appointment/send", async (req, res) => {
     let error;
     let appointment;
+    const allowedLocation = process.env.WORKFLOW_ACTION_ALLOWED_LOCATION || '';
     try {
         let {body: {data = {}, extras = {}}} = req || {};
         let {app_locationId: upsertLocationId, contactId, appointment_rejection_tag} = data;
         let dataBody = getCalendarPostData(data);
         let {locationId, contactId: contact_id = contactId} = extras;
+        if (!allowedLocation.includes(locationId)) {
+            return res.status(401).json({error: "location not allowed,", id: locationId, statusCode: 401});
+        }
         try {
             const upsert = await upsertContact(contact_id, locationId, upsertLocationId);
             dataBody.contactId = upsert.contactId;
@@ -85,7 +89,7 @@ router.post("/appointment/send", async (req, res) => {
             error = err;
             try {
                 if (typeof appointment_rejection_tag === "string") {
-                    appointment_rejection_tag = [appointment_rejection_tag];
+                    appointment_rejection_tag = [appointment_rejection_tag || "appointment_rejected"];
                 }
                 await addTag(contact_id, locationId, appointment_rejection_tag);
             } catch (e) {
@@ -102,7 +106,12 @@ router.post("/appointment/send", async (req, res) => {
     } catch (e) {
 
     }
-    res.status(200).json({msg: "Appointment send successfully", error});
+
+    if (error) {
+        res.status(error.statusCode || 400).json({error: error.error || error});
+    } else {
+        res.status(200).json({msg: "Appointment send successfully", error});
+    }
 })
 
 module.exports = router;
