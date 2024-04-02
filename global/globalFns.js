@@ -164,7 +164,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
         } catch (error) {
             // console.log("makeApiCall", error);
 
-            if (checkTokenExp(error)) {
+            if (checkTokenExp(error) || checkTokenExp(error.response?.data)) {
                 const refresh = await getToken("refresh_token");
                 if (refresh !== "") {
                     try {
@@ -184,7 +184,6 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
                     reject({
                         ...error.response.data,
                         locationId,
-                        accessToken: await getLocationAccessToken(locationId),
                         tokenType,
                         uri
                     });
