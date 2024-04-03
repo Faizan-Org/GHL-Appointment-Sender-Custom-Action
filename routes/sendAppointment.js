@@ -7,7 +7,7 @@ const getCalendarPostData = (obj = {}) => ({
     "startTime": obj.appointmentStartTime,
     "endTime": obj.appointmentEndTime,
     "title": obj.appointmentTitle,
-    "appointmentStatus": obj.appointmentStatus?.toLowerCase(),
+    "appointmentStatus": (obj.appointmentStatus?.toLowerCase() || "new"),
     "assignedUserId": obj.app_assign_user,
     "address": obj.appointmentAddress,
     "ignoreDateRange": obj.app_ignore_date_range,
@@ -103,14 +103,14 @@ router.post("/appointment/send", async (req, res) => {
     try {
         addLogs({appointment, error, body: req.body}).then(() => {
         });
-    } catch (e) {
+    } catch (e) {l
 
     }
 
     if (error) {
         res.status(error.statusCode || 400).json({error: error.error || error});
     } else {
-        res.status(200).json({msg: "Appointment send successfully", error});
+        res.status(200).json({message: "Appointment send successfully"});
     }
 })
 

@@ -4,6 +4,7 @@ const getCalendarRoute = require("./calendars");
 const getAllUserRoute = require("./users");
 const oauthRoute = require("./oauth");
 const contactPDFRoute = require("./pdf");
+const appointmentLogsRoute = require("./appointmentLogs");
 const express = require('express');
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.use(sendAppointmentRoute);
 router.use(getAllLocationRoute);
 router.use(getAllUserRoute);
 router.use(getCalendarRoute);
+router.use(appointmentLogsRoute);
 // router.use(contactPDFRoute);
 
 module.exports = router;
