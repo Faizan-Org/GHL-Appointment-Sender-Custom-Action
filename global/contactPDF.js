@@ -286,7 +286,7 @@ function createContactPDF({contactId, locationId}) {
             const file = await generatePDF(pdfData, contactData.firstName);
             resolve(file);
         } catch (e) {
-            reject("fun-> createContactPDF, Reason: " + e.message);
+            reject("fun-> createContactPDF, Reason: " + (e.message || e))
         }
     })
 }
