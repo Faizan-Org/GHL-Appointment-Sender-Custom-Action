@@ -196,35 +196,33 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
     })
 }
 
-function searchCustomField(locationId, query = "pdf url") {
+function searchCustomField(locationId, query = "pdf file") {
     return new Promise(async (resolve, reject) => {
         const params = {
             parentId: '',
             skip: 0,
             limit: 10,
             documentType: "field",
-            model: "all",
+            model: "contact",
             query,
-            includeStandards: true,
-
         }
 
         try {
-            const {customFields} = makeApiCall("locations/" + locationId + "/customFields/search", "GET", null, params, "location", locationId);
-            resolve(customFields[0]);
+            const {customFields} = await makeApiCall("locations/" + locationId + "/customFields/search", "GET", null, params, "location", locationId);
+            resolve(customFields ? customFields[0] : null);
         } catch (error) {
             reject(error);
         }
     })
 }
 
-function upsertCustomField(locationId, query = "pdf file") {
+function upsertCustomField(locationId, query = "pdf file", dataType = "FILE_UPLOAD") {
     return new Promise(async (resolve, reject) => {
         try {
             let error = null;
             let body = {
                 "name": query.toUpperCase(),
-                "dataType": "FILE_UPLOAD",
+                "dataType": dataType,
                 "acceptedFormat": [".pdf", ".docx"],
                 "model": "contact",
                 "isMultipleFile": false,
@@ -233,7 +231,7 @@ function upsertCustomField(locationId, query = "pdf file") {
 
             let customField;
             try {
-                customField = await searchCustomField(locationId);
+                customField = await searchCustomField(locationId, query);
             } catch (e) {
                 error = e;
             }
