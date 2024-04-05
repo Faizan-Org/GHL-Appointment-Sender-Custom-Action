@@ -233,8 +233,8 @@ function generatePDF(data, surveyName = 'test') {
             });
 
             const pdfBlob = doc.output('blob');
-            const file = new File([pdfBlob], `${surveyName}.pdf`, {type: 'application/pdf'});
-            resolve(file);
+            // const file = new File([pdfBlob], `${surveyName}.pdf`, {type: 'application/pdf'});
+            resolve(pdfBlob);
         } catch (e) {
             reject(e + "Initiator: generatePDF");
         }
