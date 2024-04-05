@@ -10,7 +10,7 @@ const get_connectivity_url = (redirectURL) => (new URL(`https://marketplace.gohi
 
 router.get("/oauth/connect", async (req, res) => {
     const code = req.query?.code || null;
-    const REDIRECT_URI = encodeURIComponent(req.protocol + '://' + req.get('host') + req.originalUrl);
+    const REDIRECT_URI = encodeURIComponent('https://' + req.get('host') + req.originalUrl);
     if (code) {
         try {
             await oauthToken(code);

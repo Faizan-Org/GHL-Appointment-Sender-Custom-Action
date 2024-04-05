@@ -59,8 +59,12 @@ const MimicSurvey = [
 
 
 function sortBySurveyOrder(arr) {
-    arr.sort((a, b) => compareWithOrder(a, b, MimicSurvey));
-    arr.sort((a, b) => compareWithOrder(a, b, MustInLast));
+    try {
+        arr.sort((a, b) => compareWithOrder(a, b, MimicSurvey));
+        arr.sort((a, b) => compareWithOrder(a, b, MustInLast));
+    } catch (e) {
+
+    }
 }
 
 
@@ -236,17 +240,15 @@ function generatePDF(data, surveyName = 'test') {
         }
     })
 }
-
-
 function createContactPDF({contactId, locationId}) {
     return new Promise(async (resolve, reject) => {
-
-        if (typeof contactId !== "string" || typeof locationId !== "string") {
-           return reject("fun: Contact PDF, Invalid parameters, or data type.");
-        }
-
-        let pdfData = [];
         try {
+
+            if (typeof contactId !== "string" || typeof locationId !== "string") {
+                return reject("fun: Contact PDF, Invalid parameters, or data type.");
+            }
+
+            let pdfData = [];
             const contactData = await getContactData(contactId, locationId);
             const cfs = await getCustomFields(locationId);
             Object.keys(cKeys).forEach(x => {
@@ -271,9 +273,7 @@ function createContactPDF({contactId, locationId}) {
                 pdfData.push({key: (cfs[cf.id]?.trim() ?? null), value: cf.value, isPlan});
             }
 
-            const mustInLast = pdfData.flatMap(entry => {
-                return MustInLast.some(phrase => entry.key.includes(phrase)) ? entry.key : [];
-            });
+            const mustInLast = pdfData.flatMap(entry => MustInLast.some(phrase => entry.key.includes(phrase)) ? entry.key : []);
 
             sortBySurveyOrder(pdfData);
 
@@ -286,7 +286,7 @@ function createContactPDF({contactId, locationId}) {
             const file = await generatePDF(pdfData, contactData.firstName);
             resolve(file);
         } catch (e) {
-            reject("fun-> createContactPDF, Reason: " + e);
+            reject("fun-> createContactPDF, Reason: " + e.message);
         }
     })
 }

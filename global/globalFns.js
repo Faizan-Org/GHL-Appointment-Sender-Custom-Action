@@ -173,7 +173,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
                             resolve(x);
                         })
                     } catch (err) {
-                        console.log("makeApiCall oauthToken", err.response.data);
+                        console.log("makeApiCall oauthToken", err);
                         reject('invalid, from make api call');
                     }
                 } else {
@@ -198,36 +198,60 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
 
 function searchCustomField(locationId, query = "pdf url") {
     return new Promise(async (resolve, reject) => {
+        const params = {
+            parentId: '',
+            skip: 0,
+            limit: 10,
+            documentType: "field",
+            model: "all",
+            query,
+            includeStandards: true,
+
+        }
+
         try {
-            const options = {
-                method: 'GET',
-                url: mainauthurl + "locations/" + locationId + "/customFields/search",
-                params: {
-                    parentId: '',
-                    skip: 0,
-                    limit: 10,
-                    documentType: "field",
-                    model: "all",
-                    query,
-                    includeStandards: true,
-                    headers: {
-                        Authorization: 'Bearer ' + await getToken(undefined, "location", locationId),
-                        Version: process.env.API_VERSION,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json'
-                    }
+            const {customFields} = makeApiCall("locations/" + locationId + "/customFields/search", "GET", null, params, "location", locationId);
+            resolve(customFields[0]);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
+function upsertCustomField(locationId, query = "pdf file") {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let error = null;
+            let body = {
+                "name": query.toUpperCase(),
+                "dataType": "FILE_UPLOAD",
+                "acceptedFormat": [".pdf", ".docx"],
+                "model": "contact",
+                "isMultipleFile": false,
+                "maxNumberOfFiles": 1
+            }
+
+            let customField;
+            try {
+                customField = await searchCustomField(locationId);
+            } catch (e) {
+                error = e;
+            }
+
+            if (!customField) {
+                try {
+                    customField = await makeApiCall("locations/" + locationId + "/customFields", "POST", body, null, 'location', locationId);
+                } catch (e) {
+                    error = e;
                 }
             }
-
-            const {data} = await axios.request(options);
-            resolve(data.customFields[0]);
-
-        } catch (error) {
-            try {
-                reject(error.response.data)
-            } catch (e) {
+            if (error) {
                 reject(error);
+            } else {
+                resolve(customField)
             }
+        } catch (e) {
+            reject(e);
         }
     })
 }
@@ -290,4 +314,13 @@ function addLogs(data) {
     })
 }
 
-module.exports = {oauthToken, getToken, makeApiCall, uploadFileToCustomField, searchCustomField, addLogs, addTag};
+module.exports = {
+    oauthToken,
+    getToken,
+    makeApiCall,
+    uploadFileToCustomField,
+    searchCustomField,
+    addLogs,
+    addTag,
+    upsertCustomField
+};
