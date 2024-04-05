@@ -233,13 +233,14 @@ function generatePDF(data, surveyName = 'test') {
             });
 
             const pdfBlob = doc.output('blob');
-            // const file = new File([pdfBlob], `${surveyName}.pdf`, {type: 'application/pdf'});
-            resolve(pdfBlob);
+            const file = new File([pdfBlob], `${surveyName}.pdf`, {type: 'application/pdf'});
+            resolve(file);
         } catch (e) {
             reject(e + "Initiator: generatePDF");
         }
     })
 }
+
 function createContactPDF({contactId, locationId}) {
     return new Promise(async (resolve, reject) => {
         try {
