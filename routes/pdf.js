@@ -15,10 +15,14 @@ router.post("/contact/pdf", async (req, res) => {
 
         let error = null;
 
+        console.time("Create PDF Time");
         const file = await createContactPDF({contactId, locationId});
+        console.timeEnd("Create PDF Time");
 
+        console.time("Find custom field and save value Time");
         const cf_pdf_file = await upsertCustomField(locationId, "pdf file", "FILE_UPLOAD");
         const uploadedFile = await uploadFileToCustomField(contactId, locationId, file, cf_pdf_file.id);
+        console.timeEnd("Find custom field and save value Time");
 
         /*
         const cf_pdf_url = await upsertCustomField(locationId, "pdf url", "TEXT");

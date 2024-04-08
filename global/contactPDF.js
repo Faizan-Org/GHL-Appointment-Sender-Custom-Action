@@ -1,5 +1,6 @@
 const {jsPDF} = require('jspdf');
 const {makeApiCall} = require("./globalFns");
+const axios = require("axios");
 
 
 const cKeys = {
@@ -149,9 +150,28 @@ function getCustomFields(locationId) {
     })
 }
 
-let IMAGE_STORAGE_URL = "https://storage.googleapis.com/crm-contacts-docs-production/vziY4BfTo6yssDoovkSU/";
+function getDecodeImageData(url) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await axios.request({
+                url: url,
+                method: "GET",
+                responseType: 'arraybuffer'
+            });
+            const contentType = response.headers['content-type'];
+            const imageData = Buffer.from(response.data, 'binary').toString('base64');
+            if (contentType.startsWith('image/')) {
+                resolve({imageData, contentType: contentType});
+            } else {
+                reject(`Unsupported image format: ${contentType}`);
+            }
+        } catch (error) {
+            reject('Error fetching or processing image:' + (error.message || error));
+        }
+    })
+}
 
-function generatePDF(data, surveyName = 'test', locationId) {
+function generatePDF(contactDetails, surveyName = 'test', locationId) {
     return new Promise(async (resolve, reject) => {
         try {
             const doc = new jsPDF();
@@ -166,7 +186,8 @@ function generatePDF(data, surveyName = 'test', locationId) {
                 pageCount++;
             }
 
-            data.forEach((data, index) => {
+            for (let index = 0; index < contactDetails.length; index++) {
+                const data = contactDetails[index];
                 try {
 
                     let meta = null;
@@ -200,23 +221,34 @@ function generatePDF(data, surveyName = 'test', locationId) {
                             addPage();
                         }
                         try {
-                            if (data.isPlan && data.value && typeof data.value === "string" && data.value.includes("documents/download/")) {
-                                let fileId = data.value.split("documents/download/")[1];
-                                doc.addImage(IMAGE_STORAGE_URL + fileId, 'JPEG', 10, yPosition, 100, height);
-                            } else {
-                                doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
+
+                            let imageData = data.value;
+                            let format = 'PNG';
+
+                            if (data.value && data.value.includes("documents/download/")) {
+                                try {
+                                    const decodeImageData = await getDecodeImageData(data.value);
+                                    imageData = decodeImageData.imageData;
+                                    format = decodeImageData.contentType.split("/")[1] || format;
+                                } catch (e) {
+                                    console.log("Failed to decode image data, Reason:", e);
+                                }
                             }
 
+                            doc.addImage(imageData, format, 10, yPosition, 100, height);
                             yPosition += height;
                         } catch (e) {
                             doc.text(10, yPosition, textLinesResponse);
                             yPosition += 10;
+                            conosle.log("Failed to add image in pdf file,", e);
                         }
 
-                        if (meta?.timestamp) {
+                        if (meta && meta.timestamp) {
+                            console.log("meta,", meta.timestamp);
+                            yPosition += 10;
                             let timestamp = parseInt(meta?.timestamp + "000");
                             timestamp = isNaN(timestamp) ? meta?.timestamp : formatDate(timestamp, true);
-                            doc.text(10, yPosition, "Time Signed: " + timestamp);
+                            doc.text("Time Signed: " + timestamp, 10, yPosition);
                         }
 
                     } else if (data.key === "Income Chart") {
@@ -234,9 +266,8 @@ function generatePDF(data, surveyName = 'test', locationId) {
                     // doc.text(10, yPosition, textLinesResponse);
 
                 } catch (e) {
-
                 }
-            });
+            }
 
             const pdfBlob = doc.output('blob');
             const file = new File([pdfBlob], `${surveyName}.pdf`, {type: 'application/pdf'});
@@ -304,6 +335,5 @@ function createContactPDF({contactId, locationId}) {
         }
     })
 }
-
 
 module.exports = {createContactPDF, getContactData, getCustomFields};
