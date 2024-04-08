@@ -149,7 +149,9 @@ function getCustomFields(locationId) {
     })
 }
 
-function generatePDF(data, surveyName = 'test') {
+let IMAGE_STORAGE_URL = "https://storage.googleapis.com/crm-contacts-docs-production/vziY4BfTo6yssDoovkSU/";
+
+function generatePDF(data, surveyName = 'test', locationId) {
     return new Promise(async (resolve, reject) => {
         try {
             const doc = new jsPDF();
@@ -198,8 +200,9 @@ function generatePDF(data, surveyName = 'test') {
                             addPage();
                         }
                         try {
-                            if (data.isPlan && data.value) {
-                                doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
+                            if (data.isPlan && data.value && typeof data.value === "string" && data.value.includes("documents/download/")) {
+                                let fileId = data.value.split("documents/download/")[1];
+                                doc.addImage(IMAGE_STORAGE_URL + fileId, 'JPEG', 10, yPosition, 100, height);
                             } else {
                                 doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
                             }
@@ -294,7 +297,7 @@ function createContactPDF({contactId, locationId}) {
                 pdfData = pdfData.concat(f);
             }
 
-            const file = await generatePDF(pdfData, contactData.firstName);
+            const file = await generatePDF(pdfData, contactData.firstName, locationId);
             resolve(file);
         } catch (e) {
             reject("fun-> createContactPDF, Reason: " + (e.message || e))
