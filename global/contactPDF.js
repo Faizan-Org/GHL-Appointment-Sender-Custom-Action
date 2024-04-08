@@ -199,7 +199,6 @@ function generatePDF(data, surveyName = 'test') {
                         }
                         try {
                             if (data.isPlan && data.value) {
-                                console.log("data.value", data.value)
                                 doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
                             } else {
                                 doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
