@@ -18,7 +18,7 @@ router.post("/contact/pdf", async (req, res) => {
         const file = await createContactPDF({contactId, locationId});
 
         const cf_pdf_file = await upsertCustomField(locationId, "pdf file", "FILE_UPLOAD");
-        const uploadedFile = await uploadFileToCustomField(contactId, locationId, file, cf_pdf_file);
+        const uploadedFile = await uploadFileToCustomField(contactId, locationId, file, cf_pdf_file.id);
 
         /*
         const cf_pdf_url = await upsertCustomField(locationId, "pdf url", "TEXT");
