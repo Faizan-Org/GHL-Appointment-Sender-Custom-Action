@@ -123,7 +123,7 @@ function checkTokenExp(data) {
     if (data && data?.statusCode) {
         let text = data.message;
         if (data.statusCode === 401 && data.message) {
-            return (text.includes('access') && (text.includes('expired') || text.includes('invalid')) || text.includes("Invalid JWT"));
+            return ((text.includes('access') && (text.includes('expired') || text.includes('invalid'))) || text.toLowerCase().includes("invalid jwt"));
         }
     }
     return false;
@@ -165,6 +165,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
             // console.log("makeApiCall", error);
 
             if (checkTokenExp(error) || checkTokenExp(error.response?.data)) {
+                console.log("Token expired... getting valid token");
                 const refresh = await getToken("refresh_token");
                 if (refresh !== "") {
                     try {
