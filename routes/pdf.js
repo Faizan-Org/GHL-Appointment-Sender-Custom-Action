@@ -7,11 +7,12 @@ router.post("/contact/pdf", async (req, res) => {
 
         const body = req.body;
 
-        const {contactId, locationId} = body;
-        console.log("for pdf: body", body);
-        if (typeof contactId !== "string" || typeof locationId !== "string") {
+        const {id: contactId, locationId, type} = body;
+        if (type !== 'ContactCreate') {
+            console.log("for pdf: body", body);
             return res.status(400).send("fun: Contact PDF, Invalid parameters, or data type.");
         }
+
         let error = null;
 
         const file = await createContactPDF({contactId, locationId});
