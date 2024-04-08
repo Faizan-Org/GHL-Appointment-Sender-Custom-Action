@@ -98,45 +98,65 @@ function getLocationAccessToken(locationId) {
 }
 
 const getToken = (type = "access_token", tokenType, locationId) => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
         let token = "";
 
-        if (tokenType === 'location') {
-            token = await getLocationAccessToken(locationId);
-        } else {
-            let cacheData = await client.get(process.env.CACHE_KEY);
-            if (cacheData) {
-                cacheData = JSON.parse(cacheData);
-                if (type === "access_token") {
-                    token = cacheData.access_token;
-                } else {
-                    token = cacheData.refresh_token;
+        try {
+
+            if (tokenType === 'location') {
+                token = await getLocationAccessToken(locationId);
+            } else {
+                let cacheData = await client.get(process.env.CACHE_KEY);
+                if (cacheData) {
+                    cacheData = JSON.parse(cacheData);
+                    if (type === "access_token") {
+                        token = cacheData.access_token;
+                    } else {
+                        token = cacheData.refresh_token;
+                    }
                 }
             }
-        }
 
-        resolve(token);
+            resolve(token);
+        } catch (err) {
+            console.log("Get Token", err);
+            reject(err);
+        }
     })
 }
 
 function checkTokenExp(data) {
-    if (data && data?.statusCode) {
-        let text = data.message;
-        if (data.statusCode === 401 && data.message) {
-            return ((text.includes('access') && (text.includes('expired') || text.includes('invalid'))) || text.toLowerCase().includes("invalid jwt"));
+    try {
+        if (data && data?.statusCode) {
+            let text = data.message;
+            if (data.statusCode === 401 && data.message) {
+                return ((text.includes('access') && (text.includes('expired') || text.includes('invalid'))) || text.toLowerCase().includes("invalid jwt"));
+            }
         }
+    } catch (e) {
+        console.log("checkTokenExp -->", e)
     }
     return false;
 }
 
-function makeApiCall(uri, method = "GET", body = null, params = null, tokenType, locationId) {
+
+console.log("running");
+makeApiCall("contacts/w8eMg5lAh78zjQWwFHL2", 'GET', null, null, "location", "vziY4BfTo6yssDoovkSU")
+    .then(x => {
+        console.log(x);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
+function makeApiCall(uri, method = "GET", body = null, params = null, tokenType = null, locationId) {
     return new Promise(async (resolve, reject) => {
         try {
             locationId = locationId || params?.locationId;
             if (tokenType === 'location' && typeof locationId !== "string") {
-                reject("fun -> makeApiCall, reason -> locationId is missing or invalid data type");
+                return reject("fun -> makeApiCall, reason -> locationId is missing or invalid data type");
             }
-            const token = await getToken(undefined, tokenType, locationId);
+            let token = await getToken(undefined, tokenType, locationId);
             let url = new URL(uri, mainauthurl);
             if (!token || token.error) {
                 return reject({error: "Token not found. Please reconnect your app with account.", msg: token?.error})
@@ -162,8 +182,7 @@ function makeApiCall(uri, method = "GET", body = null, params = null, tokenType,
             const {data} = await axios.request(options);
             resolve(data);
         } catch (error) {
-            // console.log("makeApiCall", error);
-
+            console.log("makeApiCall", error);
             if (checkTokenExp(error) || checkTokenExp(error.response?.data)) {
                 console.log("Token expired... getting valid token");
                 const refresh = await getToken("refresh_token");
