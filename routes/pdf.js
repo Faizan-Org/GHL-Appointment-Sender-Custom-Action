@@ -14,29 +14,31 @@ router.post("/contact/pdf", async (req, res) => {
         let error = null;
 
         const file = await createContactPDF({contactId, locationId});
-        console.log({file});
-        const {id: pdfUrlCFId} = await upsertCustomField(locationId, "pdf url", "TEXT");
-        const {id: pdfFileCFId} = await upsertCustomField(locationId, "pdf file", "FILE_UPLOAD");
-        const {meta, uploadedFiles} = await uploadFileToCustomField({...body, file, pdfFileCFId});
 
-        let fieldValue = meta?.url || Object.values(uploadedFiles || {})[0] || '';
-        let bodyPost = {
-            "customFields": [
-                {
-                    "id": pdfUrlCFId,
-                    "field_value": fieldValue
-                }
-            ]
-        }
+        const cf_pdf_file = await upsertCustomField(locationId, "pdf file", "FILE_UPLOAD");
+        const uploadedFile = await uploadFileToCustomField(contactId, locationId, file, cf_pdf_file);
 
-        try {
+        /*
+        const cf_pdf_url = await upsertCustomField(locationId, "pdf url", "TEXT");
+
+        try \{
+            let bodyPost = {
+                "customFields": [
+                    {
+                        "id": cf_pdf_url.id,
+                        "field_value": fileURL
+                    }
+                ]
+            }
+
             await makeApiCall("contacts/" + contactId, "PUT", bodyPost, null, 'location', locationId);
         } catch (err) {
             console.log("Failed to update pdf url cf, Reason:", err);
             error = err;
         }
+        */
 
-        res.status(200).json({meta, uploadedFiles, error});
+        res.status(200).json({uploadedFile, error});
     } catch (e) {
         try {
             console.log(e);

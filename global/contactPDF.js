@@ -67,7 +67,6 @@ function sortBySurveyOrder(arr) {
     }
 }
 
-
 const MustInLast = [
     "By signing below, you attest that the previously provided information constitutes the information used to create your Marketplace application",
     "Signature",
@@ -116,11 +115,15 @@ function getContactData(contactId, locationId) {
         try {
             const {contact} = await makeApiCall("contacts/" + contactId, 'GET', null, null, "location", locationId);
             contact.customFields.forEach(cf => {
-                const val = cf.value;
-                if (val instanceof Array) {
-                    cf.value = val.join(", ");
-                } else if (typeof val === "string") {
-                    cf.value = val.replaceAll('\n', ', ');
+                try {
+                    const val = cf.value;
+                    if (val instanceof Array) {
+                        cf.value = val.join(", ");
+                    } else if (typeof val === "string") {
+                        cf.value = val.replaceAll('\n', ', ');
+                    }
+                } catch (e) {
+                    console.error('Error processing customFields:', e);
                 }
             })
             contact.customFields.sort(compare);
@@ -195,7 +198,8 @@ function generatePDF(data, surveyName = 'test') {
                             addPage();
                         }
                         try {
-                            if (data.isPlan) {
+                            if (data.isPlan && data.value) {
+                                console.log("data.value", data.value)
                                 doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
                             } else {
                                 doc.addImage(data.value, 'JPEG', 10, yPosition, 100, height);
@@ -240,6 +244,13 @@ function generatePDF(data, surveyName = 'test') {
         }
     })
 }
+
+/*
+{
+    "locationId": "vziY4BfTo6yssDoovkSU",
+    "contactId": "w8eMg5lAh78zjQWwFHL2"
+}
+*/
 
 function createContactPDF({contactId, locationId}) {
     return new Promise(async (resolve, reject) => {
@@ -293,4 +304,4 @@ function createContactPDF({contactId, locationId}) {
 }
 
 
-module.exports = {createContactPDF};
+module.exports = {createContactPDF, getContactData, getCustomFields};

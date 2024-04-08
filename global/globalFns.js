@@ -99,7 +99,7 @@ function getLocationAccessToken(locationId) {
 
 const getToken = (type = "access_token", tokenType, locationId) => {
     return new Promise(async (resolve, reject) => {
-        let token = "";
+        let token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoQ2xhc3MiOiJDb21wYW55IiwiYXV0aENsYXNzSWQiOiI2NFlseDVQa2FRNUFoTldkdUtpeSIsInNvdXJjZSI6IklOVEVHUkFUSU9OIiwic291cmNlSWQiOiI2NWZjMDFhNDMzMDAwZmU1NWEzZTU4M2EtbHUxMmJqM20iLCJjaGFubmVsIjoiT0FVVEgiLCJwcmltYXJ5QXV0aENsYXNzSWQiOiI2NFlseDVQa2FRNUFoTldkdUtpeSIsIm9hdXRoTWV0YSI6eyJzY29wZXMiOlsiY2FsZW5kYXJzLndyaXRlIiwiY2FsZW5kYXJzL2V2ZW50cy53cml0ZSIsImNhbGVuZGFycy9ncm91cHMud3JpdGUiLCJjYWxlbmRhcnMvcmVzb3VyY2VzLndyaXRlIiwibG9jYXRpb25zLndyaXRlIiwiY29udGFjdHMud3JpdGUiLCJ1c2Vycy5yZWFkb25seSIsInNhYXMvbG9jYXRpb24ud3JpdGUiLCJzdXJ2ZXlzLnJlYWRvbmx5Iiwid29ya2Zsb3dzLnJlYWRvbmx5IiwidXNlcnMud3JpdGUiLCJzYWFzL2xvY2F0aW9uLnJlYWQiLCJzYWFzL2NvbXBhbnkud3JpdGUiLCJzYWFzL2NvbXBhbnkucmVhZCIsInByb2R1Y3RzL3ByaWNlcy53cml0ZSIsInByb2R1Y3RzL3ByaWNlcy5yZWFkb25seSIsInByb2R1Y3RzLndyaXRlIiwicHJvZHVjdHMucmVhZG9ubHkiLCJwYXltZW50cy90cmFuc2FjdGlvbnMucmVhZG9ubHkiLCJwYXltZW50cy9zdWJzY3JpcHRpb25zLnJlYWRvbmx5IiwicGF5bWVudHMvb3JkZXJzLnJlYWRvbmx5Iiwib3Bwb3J0dW5pdGllcy5yZWFkb25seSIsIm9wcG9ydHVuaXRpZXMud3JpdGUiLCJmdW5uZWxzL3JlZGlyZWN0LndyaXRlIiwiZnVubmVscy9yZWRpcmVjdC5yZWFkb25seSIsIm1lZGlhcy53cml0ZSIsIm1lZGlhcy5yZWFkb25seSIsImxvY2F0aW9ucy90ZW1wbGF0ZXMucmVhZG9ubHkiLCJsb2NhdGlvbnMvdGFncy53cml0ZSIsImxvY2F0aW9ucy90YWdzLnJlYWRvbmx5IiwibG9jYXRpb25zL3Rhc2tzLndyaXRlIiwiYnVzaW5lc3Nlcy5yZWFkb25seSIsImJ1c2luZXNzZXMud3JpdGUiLCJjb21wYW5pZXMucmVhZG9ubHkiLCJjYWxlbmRhcnMucmVhZG9ubHkiLCJjYWxlbmRhcnMvZ3JvdXBzLnJlYWRvbmx5IiwiY2FsZW5kYXJzL2V2ZW50cy5yZWFkb25seSIsImNhbGVuZGFycy9yZXNvdXJjZXMucmVhZG9ubHkiLCJjYW1wYWlnbnMucmVhZG9ubHkiLCJjb252ZXJzYXRpb25zLnJlYWRvbmx5IiwiY29udmVyc2F0aW9ucy53cml0ZSIsImNvbnZlcnNhdGlvbnMvbWVzc2FnZS5yZWFkb25seSIsImNvbnZlcnNhdGlvbnMvbWVzc2FnZS53cml0ZSIsImNvbnRhY3RzLnJlYWRvbmx5IiwiZm9ybXMucmVhZG9ubHkiLCJmb3Jtcy53cml0ZSIsImludm9pY2VzLnJlYWRvbmx5IiwiaW52b2ljZXMud3JpdGUiLCJpbnZvaWNlcy9zY2hlZHVsZS5yZWFkb25seSIsImludm9pY2VzL3NjaGVkdWxlLndyaXRlIiwiaW52b2ljZXMvdGVtcGxhdGUucmVhZG9ubHkiLCJpbnZvaWNlcy90ZW1wbGF0ZS53cml0ZSIsImxpbmtzLnJlYWRvbmx5IiwibGlua3Mud3JpdGUiLCJsb2NhdGlvbnMucmVhZG9ubHkiLCJsb2NhdGlvbnMvY3VzdG9tVmFsdWVzLnJlYWRvbmx5IiwibG9jYXRpb25zL2N1c3RvbVZhbHVlcy53cml0ZSIsImxvY2F0aW9ucy9jdXN0b21GaWVsZHMucmVhZG9ubHkiLCJsb2NhdGlvbnMvY3VzdG9tRmllbGRzLndyaXRlIiwibG9jYXRpb25zL3Rhc2tzLnJlYWRvbmx5Iiwib2F1dGgud3JpdGUiLCJvYXV0aC5yZWFkb25seSJdLCJjbGllbnQiOiI2NWZjMDFhNDMzMDAwZmU1NWEzZTU4M2EiLCJjbGllbnRLZXkiOiI2NWZjMDFhNDMzMDAwZmU1NWEzZTU4M2EtbHUxMmJqM20iLCJhZ2VuY3lQbGFuIjoiYWdlbmN5X21vbnRobHlfNDk3In0sImlhdCI6MTcxMjU5MjM4Ni43NjksImV4cCI6MTcxMjY3ODc4Ni43Njl9.YxAwd2chL2I9imCYhEpi1mj496o8Yvr2vdKOhBHL0tqKAryfFi-o6QpjWe3O3NO2WxcKPP2XdsOS_C8oYtizUMug30vtKka2lehL_PpaHvRWwZVAWKzYohdFSQyHg1JUKgPuTIsxsjhjMVla5GjNc945UwEFgTMKikWdsQpkRPLrIvAfA_akBGGw0Lsan5rT9_GJQP6GpkFLxCtcR-_AYfIemLTGBugmPFLDCg7p1clJuUedXfi3WcowkfL9KujpbVHzGr2_CBAUXTNAeIKwPzqdzkAQxDf9lJ3RSHFcV8IHutqD3DdIqdXUNGHxFnEZngUTXsVyXDu171pKQa_ZkAzwwafpMJvorS8hQOr1bhNLArtZ7hHXwLlZTVIh0Pwx0E8dVXyfU5eymrMdf3Oa02nfCnS6ARy82KR2RGBUbTR438Qo2cB3RD4dvLgbkp2NuBTXEaHgQxAYsXX1ykJ_rmdDR3IX0yJ56BaIq3sOOzdL9bLyxjokMu_YXhxJjSWnD50TJ1_dA-aoWg_lqvA-wKSQADljCzxJASt50naQoP5yetooa_5WCzLz2wbfHVDbu81qcUnEEYrLAMmlYtUFZXyiscCupxrT-8kJbNE6kaYJ2bstcg3E4zIoWlc86qsLnVjRHrGom0SzW6snJ2lkysGy9hDDAyx4fGF5KWNIsUA";
 
         try {
 
@@ -110,7 +110,7 @@ const getToken = (type = "access_token", tokenType, locationId) => {
                 if (cacheData) {
                     cacheData = JSON.parse(cacheData);
                     if (type === "access_token") {
-                        token = cacheData.access_token;
+                        // token = cacheData.access_token;
                     } else {
                         token = cacheData.refresh_token;
                     }
@@ -138,16 +138,6 @@ function checkTokenExp(data) {
     }
     return false;
 }
-
-
-console.log("running");
-makeApiCall("contacts/w8eMg5lAh78zjQWwFHL2", 'GET', null, null, "location", "vziY4BfTo6yssDoovkSU")
-    .then(x => {
-        console.log(x);
-    })
-    .catch(err => {
-        console.log(err);
-    })
 
 function makeApiCall(uri, method = "GET", body = null, params = null, tokenType = null, locationId) {
     return new Promise(async (resolve, reject) => {
@@ -263,6 +253,7 @@ function upsertCustomField(locationId, query = "pdf file", dataType = "FILE_UPLO
                     error = e;
                 }
             }
+
             if (error) {
                 reject(error);
             } else {
@@ -274,7 +265,7 @@ function upsertCustomField(locationId, query = "pdf file", dataType = "FILE_UPLO
     })
 }
 
-function uploadFileToCustomField({contactId, locationId, file, customFieldId}) {
+function uploadFileToCustomField(contactId, locationId, file, customFieldId) {
     return new Promise(async (resolve, reject) => {
         try {
             const form = new FormData();
@@ -293,12 +284,23 @@ function uploadFileToCustomField({contactId, locationId, file, customFieldId}) {
             };
 
             const {data} = await axios.request(options);
+            /*let url = '';
+            try {
+                const {contact: {customFields}} = data || {};
+                const field = customFields.find(cf => cf.id === customFieldId);
+                if(field){
+
+                }
+                console.log("field", customFields);
+            } catch (e) {
+                url = e.message || '';
+            }*/
             return resolve(data);
         } catch (error) {
             try {
                 reject(error.response.data);
             } catch (e) {
-                reject(error);
+                reject("custom field - file upload fun" + error);
             }
         }
     })
