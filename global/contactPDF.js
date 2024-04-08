@@ -171,6 +171,26 @@ function getDecodeImageData(url) {
     })
 }
 
+function formatDate(date, withSecond = false) {
+    const filter = {
+        hour24: "false",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: 'numeric',
+        minute: 'numeric'
+    }
+    if (withSecond) {
+        filter.second = 'numeric';
+    }
+    let fDate = new Date(date);
+    if (String(fDate) === "Invalid Date") {
+        return date;
+    }
+
+    return fDate.toLocaleString(undefined, filter);
+}
+
 function generatePDF(contactDetails, surveyName = 'test', locationId) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -244,8 +264,7 @@ function generatePDF(contactDetails, surveyName = 'test', locationId) {
                         }
 
                         if (meta && meta.timestamp) {
-                            console.log("meta,", meta.timestamp);
-                            yPosition += 10;
+                            yPosition += 12;
                             let timestamp = parseInt(meta?.timestamp + "000");
                             timestamp = isNaN(timestamp) ? meta?.timestamp : formatDate(timestamp, true);
                             doc.text("Time Signed: " + timestamp, 10, yPosition);
