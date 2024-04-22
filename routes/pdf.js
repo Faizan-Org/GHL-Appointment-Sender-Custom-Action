@@ -13,6 +13,11 @@ router.post("/contact/pdf", async (req, res) => {
             return res.status(400).send("fun: Contact PDF, Invalid parameters, or data type.");
         }
 
+        req.clients.forEach(client => {
+            client.send(JSON.stringify(body));
+        });
+
+
         let error = null;
 
         const file = await createContactPDF({contactId, locationId});
