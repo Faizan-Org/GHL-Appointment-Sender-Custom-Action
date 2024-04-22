@@ -28,8 +28,8 @@ wss.on("connection", (socket, req) => {
 
     wss.on('error', console.error);
 
-    socket.on("close", () => {
-        console.log("Client disconnected");
+    socket.on("close", (id) => {
+        console.log("[close] Client Disconnected, Id => ", id);
         clients.delete(socket);
     });
 
