@@ -2,7 +2,7 @@ const express = require('express');
 const {makeApiCall} = require("../global/globalFns");
 const router = express.Router();
 
-router.post(":locationId/contacts/:email", async (req, res) => {
+router.post("search/:locationId/contacts/:email", async (req, res) => {
     try {
         const {locationId, email} = req.params;
         const {contacts} = await makeApiCall(`contacts/`, 'GET', null, {
