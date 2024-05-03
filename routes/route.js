@@ -5,6 +5,8 @@ const getAllUserRoute = require("./users");
 const oauthRoute = require("./oauth");
 const contactPDFRoute = require("./pdf");
 const appointmentLogsRoute = require("./appointmentLogs");
+const contactTagsRoute = require("./contactTags");
+const contactSearchRoute = require("./getContacts");
 const express = require('express');
 const router = express.Router();
 
@@ -15,5 +17,7 @@ router.use(getAllUserRoute);
 router.use(getCalendarRoute);
 router.use(appointmentLogsRoute);
 router.use(contactPDFRoute);
+router.use(contactTagsRoute);
+router.use(contactSearchRoute);
 
 module.exports = router;
