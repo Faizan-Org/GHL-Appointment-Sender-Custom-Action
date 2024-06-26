@@ -13,6 +13,7 @@ const cKeys = {
     "state": "State",
     "city": "City",
     "postalCode": "Postal code",
+    "dateOfBirth": "Date of birth"
 }
 
 
@@ -212,8 +213,11 @@ function generatePDF(contactDetails, surveyName = 'test', locationId) {
 
                     let meta = null;
                     let isSignature = false;
-                    let {value} = data;
-                    if (typeof value === "object") {
+                    let {value, key} = data;
+
+                    if (key.toLowerCase().includes("trusted form ping url") || key.toLowerCase().includes("trusted form cert url")) {
+                        continue;
+                    } else if (typeof value === "object") {
                         meta = value.meta;
                         ({isSignature} = meta ?? {});
                         data.value = value.url ?? '';

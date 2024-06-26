@@ -268,6 +268,16 @@ function upsertCustomField(locationId, query = "pdf file", dataType = "FILE_UPLO
 function uploadFileToCustomField(contactId, locationId, file, customFieldId) {
     return new Promise(async (resolve, reject) => {
         try {
+            await makeApiCall("contact/" + contactId, "PUT", {
+                "customFields": [{
+                    "id": customFieldId,
+                    "field_value": null
+                }]
+            }, null, 'location', locationId);
+        } catch (e) {
+
+        }
+        try {
             const form = new FormData();
             form.set(customFieldId, file);
             const options = {
@@ -317,8 +327,8 @@ function addTag(contactId, locationId, tags) {
     })
 }
 
-function addLogs(data) {
-    const LOGS_URL = "https://script.google.com/macros/s/AKfycbwvjHmw5YmK3D657zfu-9kFLiTlMLB_BdcYG8qrW4n-zn_VW-mu5umsWvyqSCvE0HScUA/exec";
+function addLogs(data, sheetName = false) {
+    const LOGS_URL = "https://script.google.com/macros/s/AKfycbwvjHmw5YmK3D657zfu-9kFLiTlMLB_BdcYG8qrW4n-zn_VW-mu5umsWvyqSCvE0HScUA/exec?sheetName=" + sheetName;
     return new Promise(async (resolve) => {
         let msg = "logs added";
         try {
