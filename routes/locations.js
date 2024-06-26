@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {makeApiCall} = require("../global/globalFns");
 
+
 router.get("/locations/all", async (req, res) => {
     let locations = [];
     let error;

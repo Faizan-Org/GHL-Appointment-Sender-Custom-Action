@@ -1,46 +1,32 @@
 const express = require('express');
 const {createContactPDF} = require("../global/contactPDF");
-const {upsertCustomField, uploadFileToCustomField, makeApiCall} = require("../global/globalFns");
+const {upsertCustomField, uploadFileToCustomField} = require("../global/globalFns");
 const router = express.Router();
+const {deleteDuplicate} = require("./deleteDuplicate");
 router.post("/contact/pdf", async (req, res) => {
     try {
 
         const body = req.body;
-
-        const {id: contactId, locationId, type} = body;
-        if (type !== 'ContactCreate') {
+        const {id: contactId, locationId = '', type} = body;
+        if (type !== 'ContactCreate' || locationId === "") {
             console.log("for pdf: body", body);
             return res.status(400).send("fun: Contact PDF, Invalid parameters, or data type.");
         }
 
 
-        let error = null;
+        try {
+            deleteDuplicate(body).then(() => {
+            });
+        } catch (err) {
+            console.error(err);
+        }
 
+
+        let error = null;
         const file = await createContactPDF({contactId, locationId});
         const cf_pdf_file = await upsertCustomField(locationId, "pdf file", "FILE_UPLOAD");
         const uploadedFile = await uploadFileToCustomField(contactId, locationId, file, cf_pdf_file.id);
-
-        /*
-        const cf_pdf_url = await upsertCustomField(locationId, "pdf url", "TEXT");
-
-        try \{
-            let bodyPost = {
-                "customFields": [
-                    {
-                        "id": cf_pdf_url.id,
-                        "field_value": fileURL
-                    }
-                ]
-            }
-
-            await makeApiCall("contacts/" + contactId, "PUT", bodyPost, null, 'location', locationId);
-        } catch (err) {
-            console.log("Failed to update pdf url cf, Reason:", err);
-            error = err;
-        }
-        */
-
-        res.status(200).json({uploadedFile, error});
+        return res.status(200).json({uploadedFile, error});
     } catch (e) {
         try {
             console.log(e);
