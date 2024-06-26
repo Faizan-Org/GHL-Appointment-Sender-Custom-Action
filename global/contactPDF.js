@@ -341,11 +341,11 @@ function createContactPDF({contactId, locationId}) {
                 pdfData.push({key: (cfs[cf.id]?.trim() ?? null), value: cf.value, isPlan});
             }
 
-            const mustInLast = pdfData.flatMap(entry => MustInLast.some(phrase => entry.key.includes(phrase)) ? entry.key : []);
+            const mustInLast = pdfData.flatMap(entry => MustInLast.some(phrase => entry.key?.includes(phrase)) ? entry.key : []);
 
             sortBySurveyOrder(pdfData);
 
-            const c = pdfData.findIndex(x => mustInLast.some(y => x.key.includes(y)));
+            const c = pdfData.findIndex(x => mustInLast.some(y => x.key?.includes(y)));
             if (c !== -1 && c < mustInLast.length) {
                 let f = pdfData.splice(0, mustInLast.length);
                 pdfData = pdfData.concat(f);
@@ -354,6 +354,7 @@ function createContactPDF({contactId, locationId}) {
             const file = await generatePDF(pdfData, contactData.firstName, locationId);
             resolve(file);
         } catch (e) {
+            console.error(e);
             reject("fun-> createContactPDF, Reason: " + (e.message || e))
         }
     })
