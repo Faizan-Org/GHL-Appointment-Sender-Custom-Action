@@ -323,7 +323,7 @@ function createContactPDF({contactId, locationId}) {
                 const obj = {}
                 if (!!contactData[x]) {
                     obj.key = cKeys[x]?.trim();
-                    obj.value = x.includes('date') ? formatDate(contactData[x]) : contactData[x];
+                    obj.value = x?.includes('date') ? formatDate(contactData[x]) : contactData[x];
                     pdfData.push(obj);
                 }
             });
